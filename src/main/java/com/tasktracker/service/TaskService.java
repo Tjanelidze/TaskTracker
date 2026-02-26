@@ -28,7 +28,7 @@ public class TaskService {
             System.out.println("Task added successfully (ID: " + newTask.getId() + ")");
         } catch (IOException e) {
             System.out.println("An error occurred.");
-            e.fillInStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -41,12 +41,22 @@ public class TaskService {
         String newTaskJson = String.format(
                 "{\"id\":\"%s\",\"description\":\"%s\",\"status\":\"%s\",\"createdAt\":\"%s\",\"updatedAt\":\"%s\"}",
                 newTask.getId().toString(),
-                newTask.getDescription(),
+                escapeJson(newTask.getDescription()),
                 newTask.getStatus(),
                 newTask.getCreatedAt(),
                 newTask.getUpdatedAt()
         );
 
         return beginning + comma + newTaskJson + "]";
+    }
+
+
+    private static String escapeJson(String value) {
+        if (value == null) return "";
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 }

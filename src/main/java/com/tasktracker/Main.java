@@ -16,6 +16,8 @@ public class Main {
 
         if (command.equals("add")) {
             task.add(description);
+        } else {
+            System.out.println("Unknown command: " + command);
         }
     }
 }

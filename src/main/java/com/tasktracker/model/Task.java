@@ -12,7 +12,7 @@ public class Task {
 
     public Task(UUID id, String description, TaskStatus status) {
         this.id = id;
-        this.description = description;
+        setDescription(description);
         this.status = status;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
