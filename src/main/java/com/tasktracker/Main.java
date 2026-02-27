@@ -21,6 +21,8 @@ public class Main {
 
             String description = args[1];
             taskService.add(description);
+        } else if (command.equals("list")) {
+            taskService.listTask();
         } else {
             System.out.println("Unknown command: " + command);
         }

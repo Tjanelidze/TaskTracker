@@ -9,20 +9,32 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 public class TaskService {
-
+    private final Path filePath = Path.of("tasks.json");
 
     public void add(String description) {
-        Path filePath = Path.of("tasks.json");
-
         try {
+            Task newTask = new Task(UUID.randomUUID(), description, TaskStatus.TODO);
+            String newTaskJson = formatTaskToJson(newTask);
+
             if (!Files.exists(filePath) || Files.size(filePath) == 0) {
-                Files.writeString(filePath, "[]");
+                Files.writeString(filePath, "[\n" + newTaskJson + "\n]");
+                System.out.println("Task added successfully (ID: " + newTask.getId() + ")");
+                return;
             }
 
-            Task newTask = new Task(UUID.randomUUID(), description, TaskStatus.TODO);
-            String content = Files.readString(filePath);
-            String updatedContent = getString(content, newTask);
+            String content = Files.readString(filePath).trim();
+            int lastBracket = content.lastIndexOf("]");
+            if (lastBracket == -1) {
+                Files.writeString(filePath, "[\n" + newTaskJson + "\n]");
+                return;
+            }
 
+            String baseContent = content.substring(0, content.lastIndexOf("]")).trim();
+            if (baseContent.endsWith(",")) {
+                baseContent = baseContent.substring(0, baseContent.length() - 1);
+            }
+
+            String updatedContent = baseContent + ",\n" + newTaskJson + "\n]";
             Files.writeString(filePath, updatedContent);
 
             System.out.println("Task added successfully (ID: " + newTask.getId() + ")");
@@ -32,34 +44,33 @@ public class TaskService {
         }
     }
 
-    private static String getString(String content, Task newTask) {
-        int lastBracketIndex = content.lastIndexOf(']');
+    public void listTask() {
+        try {
+            String content = Files.readString(filePath);
 
-        if (lastBracketIndex == -1) {
-            throw new IllegalStateException("Malformed tasks.json: missing closing bracket");
+            System.out.println(content);
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
         }
-
-        String beginning = content.substring(0, lastBracketIndex);
-
-        String comma = beginning.trim().endsWith("[") ? "" : ",";
-
-        String newTaskJson = String.format(
-                "{\"id\":\"%s\",\"description\":\"%s\",\"status\":\"%s\",\"createdAt\":\"%s\",\"updatedAt\":\"%s\"}",
-                newTask.getId().toString(),
-                escapeJson(newTask.getDescription()),
-                newTask.getStatus(),
-                newTask.getCreatedAt(),
-                newTask.getUpdatedAt()
-        );
-
-        return beginning + comma + newTaskJson + "]";
     }
 
+    private String formatTaskToJson(Task task) {
+        return "  {\n" +
+                "    \"id\": \"" + task.getId() + "\",\n" +
+                "    \"description\": \"" + escapeJson(task.getDescription()) + "\",\n" +
+                "    \"status\": \"" + task.getStatus() + "\",\n" +
+                "    \"createdAt\": \"" + task.getCreatedAt() + "\",\n" +
+                "    \"updatedAt\": \"" + task.getUpdatedAt() + "\"\n" +
+                "  }";
+    }
 
     private static String escapeJson(String value) {
         if (value == null) return "";
         return value.replace("\\", "\\\\")
                 .replace("\"", "\\\"")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
