@@ -30,14 +30,16 @@ public class TaskService {
             }
 
             String baseContent = content.substring(0, lastBracket).trim();
-            int closingBracket = baseContent.lastIndexOf('}');
-            boolean duplicateBracket = baseContent.substring(0, baseContent.length() - 1).trim().endsWith("}");
 
-            if (closingBracket == -1 || duplicateBracket) {
-                System.out.println("An error occurred: tasks.json is malformed.");
-                return;
+            if (!baseContent.equals("[")) {
+                int closingBracket = baseContent.lastIndexOf('}');
+                boolean duplicateBracket = baseContent.substring(0, baseContent.length() - 1).trim().endsWith("}");
+
+                if (closingBracket == -1 || duplicateBracket) {
+                    System.out.println("An error occurred: tasks.json is malformed.");
+                    return;
+                }
             }
-
             if (baseContent.endsWith(",")) {
                 baseContent = baseContent.substring(0, baseContent.length() - 1);
             }
