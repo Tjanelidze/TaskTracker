@@ -93,7 +93,7 @@ public class TaskService {
                 return;
             }
 
-            String finalFileContent = getString(description, idIndex, content);
+            String finalFileContent = updateTask(description, idIndex, content);
 
             Files.writeString(filePath, finalFileContent);
         } catch (IOException e) {
@@ -102,7 +102,32 @@ public class TaskService {
         }
     }
 
-    private static String getString(String description, int idIndex, String content) {
+    public void delete(String taskId) {
+        try {
+            if (!Files.exists(filePath) || Files.size(filePath) == 0) {
+                System.out.println("There are no Tasks to delete!");
+                return;
+            }
+
+            String content = Files.readString(filePath).trim();
+            String idPattern = "\"id\": \"" + taskId + "\"";
+            int idIndex = content.indexOf(idPattern);
+            if (idIndex == -1) {
+                System.out.println("Task ID not found.");
+                return;
+            }
+
+            String finalFileContent = deleteTask(idIndex, content);
+
+            Files.writeString(filePath, finalFileContent);
+            System.out.println("Task deleted successfully!");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    private static String updateTask(String description, int idIndex, String content) {
         int start = content.lastIndexOf('{', idIndex);
         int end = content.indexOf('}', idIndex);
 
@@ -128,6 +153,33 @@ public class TaskService {
         return content.substring(0, start)
                 + updatedObject
                 + content.substring(end + 1);
+    }
+
+    private static String deleteTask(int idIndex, String content) {
+        int start = content.lastIndexOf('{', idIndex);
+        int end = content.indexOf('}', idIndex);
+
+        if (start == -1 || end == -1 || start >= end) {
+            return content;
+        }
+
+        int removeStart = start;
+        int removeEnd = end + 1;
+
+        while (removeEnd < content.length() && Character.isWhitespace(content.charAt(removeEnd))) {
+            removeEnd++;
+        }
+        if (removeEnd < content.length() && content.charAt(removeEnd) == ',') {
+            return content.substring(0, start) + content.substring(removeEnd + 1);
+        }
+
+        while (removeStart > 0 && Character.isWhitespace(content.charAt(removeStart - 1))) {
+            removeStart--;
+        }
+        if (removeStart > 0 && content.charAt(removeStart - 1) == ',') {
+            removeStart--;
+        }
+        return content.substring(0, removeStart) + content.substring(end + 1);
     }
 
     private String formatTaskToJson(Task task) {

@@ -36,6 +36,15 @@ public class Main {
                 String updateDesc = args[2];
                 taskService.update(updateDesc, taskId);
                 break;
+
+            case "delete":
+                if (args.length < 2) {
+                    System.out.println("Usage: task-cli delete <task-ID>");
+                    return;
+                }
+                String deleteTaskId = args[1];
+                taskService.delete(deleteTaskId);
+                break;
             default:
                 System.out.println("Unknown command: " + command);
         }
