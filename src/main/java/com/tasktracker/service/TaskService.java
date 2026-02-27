@@ -77,6 +77,55 @@ public class TaskService {
         }
     }
 
+    public void update(String description, String taskId) {
+        try {
+            if (!Files.exists(filePath) || Files.size(filePath) == 0) {
+                System.out.println("There are no Tasks to update!");
+                return;
+            }
+
+            String content = Files.readString(filePath).trim();
+
+            int idIndex = content.indexOf(taskId);
+            if (idIndex == -1) {
+                System.out.println("Task ID not found.");
+                return;
+            }
+
+            String finalFileContent = getString(description, idIndex, content);
+
+            Files.writeString(filePath, finalFileContent);
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    private static String getString(String description, int idIndex, String content) {
+        int start = idIndex;
+        while (start >= 0 && content.charAt(start) != '{') {
+            start--;
+        }
+
+        int end = idIndex;
+        while (end < content.length() && content.charAt(end) != '}') {
+            end++;
+        }
+
+        String targetObject = content.substring(start, end + 1);
+        String key = "\"description\": \"";
+        int startOfValue = targetObject.indexOf(key) + key.length();
+        int endOfValue = targetObject.indexOf("\",", startOfValue);
+
+        String updatedObject = targetObject.substring(0, startOfValue)
+                + description
+                + targetObject.substring(endOfValue);
+
+        return content.substring(0, start)
+                + updatedObject
+                + content.substring(end + 1);
+    }
+
     private String formatTaskToJson(Task task) {
         return "  {\n" +
                 "    \"id\": \"" + task.getId() + "\",\n" +

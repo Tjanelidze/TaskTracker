@@ -13,18 +13,31 @@ public class Main {
         TaskService taskService = new TaskService();
 
 
-        if (command.equals("add")) {
-            if (args.length < 2) {
-                System.out.println("Usage: task-cli add <description>");
-                return;
-            }
+        switch (command) {
+            case "add":
+                if (args.length < 2) {
+                    System.out.println("Usage: task-cli add <description>");
+                    return;
+                }
+                String description = args[1];
+                taskService.add(description);
+                break;
 
-            String description = args[1];
-            taskService.add(description);
-        } else if (command.equals("list")) {
-            taskService.listTask();
-        } else {
-            System.out.println("Unknown command: " + command);
+            case "list":
+                taskService.listTask();
+                break;
+                
+            case "update":
+                if (args.length < 3) {
+                    System.out.println("Usage: task-cli update <description><task-ID>");
+                    return;
+                }
+                String updateDesc = args[1];
+                String taskId = args[2];
+                taskService.update(updateDesc, taskId);
+                break;
+            default:
+                System.out.println("Unknown command: " + command);
         }
     }
 }
