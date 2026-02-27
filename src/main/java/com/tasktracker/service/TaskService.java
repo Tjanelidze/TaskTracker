@@ -117,12 +117,12 @@ public class TaskService {
         if (keyIndex == -1) return content;
 
         int startOfValue = keyIndex + key.length();
-        int endOfValue = targetObject.indexOf("\"", startOfValue);
+        int endOfValue = findJsonStringEnd(targetObject, startOfValue);
 
         if (endOfValue == -1) return content;
 
         String updatedObject = targetObject.substring(0, startOfValue)
-                + description
+                + escapeJson(description)
                 + targetObject.substring(endOfValue);
 
         return content.substring(0, start)
@@ -149,5 +149,15 @@ public class TaskService {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
+    }
+
+    private static int findJsonStringEnd(String s, int from) {
+        boolean escaped = false;
+        for (int i = from; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '"' && !escaped) return i;
+            escaped = c == '\\' && !escaped;
+        }
+        return -1;
     }
 }
