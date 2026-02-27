@@ -24,16 +24,21 @@ public class TaskService {
 
             String content = Files.readString(filePath).trim();
             int lastBracket = content.lastIndexOf("]");
-            if (lastBracket == -1) {
+            if (lastBracket == -1 || lastBracket != content.length() - 1) {
                 System.out.println("An error occurred: tasks.json is malformed.");
                 return;
             }
 
             String baseContent = content.substring(0, lastBracket).trim();
+            if (baseContent.isEmpty()) {
+                System.out.println("An error occurred: tasks.json is malformed.");
+                return;
+            }
+
 
             if (!baseContent.equals("[")) {
                 int closingBracket = baseContent.lastIndexOf('}');
-                boolean duplicateBracket = baseContent.substring(0, baseContent.length() - 1).trim().endsWith("}");
+                boolean duplicateBracket = baseContent.trim().endsWith("}}");
 
                 if (closingBracket == -1 || duplicateBracket) {
                     System.out.println("An error occurred: tasks.json is malformed.");
@@ -57,12 +62,13 @@ public class TaskService {
 
     public void listTask() {
         try {
-            String content = Files.readString(filePath);
-
             if (!Files.exists(filePath) || Files.size(filePath) == 0) {
                 System.out.println("[]");
                 return;
             }
+
+            String content = Files.readString(filePath);
+
 
             System.out.println(content);
         } catch (IOException e) {
