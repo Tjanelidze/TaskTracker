@@ -77,6 +77,59 @@ public class TaskService {
         }
     }
 
+    public void update(String description, String taskId) {
+        try {
+            if (!Files.exists(filePath) || Files.size(filePath) == 0) {
+                System.out.println("There are no Tasks to update!");
+                return;
+            }
+
+            String content = Files.readString(filePath).trim();
+
+            String idPattern = "\"id\": \"" + taskId + "\"";
+            int idIndex = content.indexOf(idPattern);
+            if (idIndex == -1) {
+                System.out.println("Task ID not found.");
+                return;
+            }
+
+            String finalFileContent = getString(description, idIndex, content);
+
+            Files.writeString(filePath, finalFileContent);
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    private static String getString(String description, int idIndex, String content) {
+        int start = content.lastIndexOf('{', idIndex);
+        int end = content.indexOf('}', idIndex);
+
+        if (start == -1 || end == -1 || start >= end) {
+            return content;
+        }
+
+        String targetObject = content.substring(start, end + 1);
+        String key = "\"description\": \"";
+
+        int keyIndex = targetObject.indexOf(key);
+        if (keyIndex == -1) return content;
+
+        int startOfValue = keyIndex + key.length();
+        int endOfValue = findJsonStringEnd(targetObject, startOfValue);
+
+        if (endOfValue == -1) return content;
+
+        String updatedObject = targetObject.substring(0, startOfValue)
+                + escapeJson(description)
+                + targetObject.substring(endOfValue);
+
+        return content.substring(0, start)
+                + updatedObject
+                + content.substring(end + 1);
+    }
+
     private String formatTaskToJson(Task task) {
         return "  {\n" +
                 "    \"id\": \"" + task.getId() + "\",\n" +
@@ -96,5 +149,15 @@ public class TaskService {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
+    }
+
+    private static int findJsonStringEnd(String s, int from) {
+        boolean escaped = false;
+        for (int i = from; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '"' && !escaped) return i;
+            escaped = c == '\\' && !escaped;
+        }
+        return -1;
     }
 }
