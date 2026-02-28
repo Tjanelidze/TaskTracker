@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class TaskService {
     private final TaskRepository repository;
@@ -44,13 +45,13 @@ public class TaskService {
         }
     }
 
-    public void update(String description, String taskId) {
+    public void updateTask(String taskId, Consumer<Task> mutator, String successMessage) {
         List<Task> tasks = new ArrayList<>(repository.getAll());
         boolean found = false;
 
         for (Task task : tasks) {
             if (taskId.equals(task.getId().toString())) {
-                task.setDescription(description);
+                mutator.accept(task);
                 task.setUpdatedAt(LocalDateTime.now());
                 found = true;
                 break;
@@ -61,30 +62,13 @@ public class TaskService {
             System.out.println("Task ID not found.");
         } else {
             repository.saveAll(tasks);
-            System.out.println("Task has been updated.");
+            System.out.println(successMessage);
         }
     }
 
 
-    public void updateStatus(TaskStatus status, String taskId) {
-        List<Task> tasks = new ArrayList<>(repository.getAll());
-        boolean found = false;
-
-        for (Task task : tasks) {
-            if (taskId.equals(task.getId().toString())) {
-                task.setStatus(status);
-                task.setUpdatedAt(LocalDateTime.now());
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            System.out.println("Task ID not found.");
-        } else {
-            repository.saveAll(tasks);
-            System.out.println("Task has been updated.");
-        }
+    public void updateStatus(String taskId, TaskStatus status) {
+        updateTask(taskId, task -> task.setStatus(status), "Task status has been updated");
     }
 
     public void delete(String taskId) {

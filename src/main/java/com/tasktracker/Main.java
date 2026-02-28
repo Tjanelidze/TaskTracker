@@ -37,7 +37,8 @@ public class Main {
                 }
                 String taskId = args[1];
                 String updateDesc = args[2];
-                taskService.update(updateDesc, taskId);
+                String successMessage = "Task status has been updated";
+                taskService.updateTask(taskId, task -> task.setDescription(updateDesc), successMessage);
                 break;
 
             case "delete":
@@ -60,7 +61,7 @@ public class Main {
                 String statusStr = command.replace("mark-", "").replace("-", "_").toUpperCase();
                 TaskStatus status = TaskStatus.valueOf(statusStr);
 
-                taskService.updateStatus(status, args[1]);
+                taskService.updateStatus(args[1], status);
                 break;
             default:
                 System.out.println("Unknown command: " + command);
