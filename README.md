@@ -32,7 +32,7 @@ A high-performance, zero-dependency Java command-line application for managing t
 ## 📥 Installation & Build
 1.  **Clone the repository**:
     ```bash
-    git clone [https://github.com/Tjanelidze/TaskTracker_CLI.git](https://github.com/Tjanelidze/TaskTracker_CLI.git)
+    git clone [git@github.com:Tjanelidze/TaskTracker_CLI.git](https://github.com/Tjanelidze/TaskTracker_CLI.git)
     ```
 2.  **Compile the source**:
     ```bash
