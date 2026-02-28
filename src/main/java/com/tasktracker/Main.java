@@ -27,11 +27,15 @@ public class Main {
                 break;
 
             case "list":
-                if (args.length > 1) {
-                    TaskStatus filter = parseStatus(args[1]);
-                    if (filter != null) taskService.listTasksByStatus(filter);
-                } else {
+                if (args.length == 1) {
                     taskService.listTask();
+                } else if (args.length == 2) {
+                    TaskStatus filter = parseStatus(args[1]);
+                    if (filter != null) {
+                        taskService.listTasksByStatus(filter);
+                    }
+                } else {
+                    System.out.println("Usage: task-cli list [status]");
                 }
                 break;
 

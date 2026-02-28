@@ -49,6 +49,10 @@ public class TaskService {
         List<Task> tasks = new ArrayList<>(repository.getAll());
 
         tasks.removeIf(task -> task.getStatus() != filter);
+        if (tasks.isEmpty()) {
+            System.out.println("No tasks found.");
+            return;
+        }
 
         for (Task task : tasks) {
             System.out.printf("[%s] %s - %s (Created: %s)%n",
