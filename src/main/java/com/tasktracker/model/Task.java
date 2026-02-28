@@ -7,7 +7,7 @@ public class Task {
     private final UUID id;
     private String description;
     private TaskStatus status;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Task(UUID id, String description, TaskStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -51,11 +51,7 @@ public class Task {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
+    
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
