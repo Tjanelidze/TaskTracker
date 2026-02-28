@@ -1,5 +1,6 @@
 package com.tasktracker;
 
+import com.tasktracker.repository.TaskRepository;
 import com.tasktracker.service.TaskService;
 
 public class Main {
@@ -10,7 +11,8 @@ public class Main {
         }
 
         String command = args[0];
-        TaskService taskService = new TaskService();
+        TaskRepository repository = new TaskRepository();
+        TaskService taskService = new TaskService(repository);
 
 
         switch (command) {

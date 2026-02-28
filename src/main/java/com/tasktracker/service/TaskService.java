@@ -12,15 +12,9 @@ import java.util.UUID;
 public class TaskService {
     private final TaskRepository repository;
 
-
     public TaskService(TaskRepository repository) {
         this.repository = repository;
     }
-
-    public TaskService() {
-        repository = null;
-    }
-
 
     public void add(String description) {
         List<Task> tasks = new ArrayList<>(repository.getAll());
