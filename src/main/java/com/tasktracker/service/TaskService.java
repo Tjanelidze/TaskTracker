@@ -45,6 +45,20 @@ public class TaskService {
         }
     }
 
+    public void listTasksByStatus(TaskStatus filter) {
+        List<Task> tasks = new ArrayList<>(repository.getAll());
+
+        tasks.removeIf(task -> task.getStatus() != filter);
+
+        for (Task task : tasks) {
+            System.out.printf("[%s] %s - %s (Created: %s)%n",
+                    task.getId().toString().substring(0, 8),
+                    task.getStatus(),
+                    task.getDescription(),
+                    task.getCreatedAt());
+        }
+    }
+
     public void updateTask(String taskId, Consumer<Task> mutator, String successMessage) {
         List<Task> tasks = new ArrayList<>(repository.getAll());
         boolean found = false;
