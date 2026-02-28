@@ -50,27 +50,17 @@ public class Main {
                 break;
 
             case "mark-in-progress":
-                if (args.length < 2) {
-                    System.out.println("Usage: task-cli mark-in-progress <task-ID>");
-                    return;
-                }
-                taskService.updateStatus(TaskStatus.IN_PROGRESS, args[1]);
-                break;
-
             case "mark-done":
-                if (args.length < 2) {
-                    System.out.println("Usage: task-cli mark-done <task-ID>");
-                    return;
-                }
-                taskService.updateStatus(TaskStatus.DONE, args[1]);
-                break;
-
             case "mark-todo":
                 if (args.length < 2) {
-                    System.out.println("Usage: task-cli mark-todo <task-ID>");
+                    System.out.println("Usage: task-cli " + command + " <task-ID>");
                     return;
                 }
-                taskService.updateStatus(TaskStatus.TODO, args[1]);
+
+                String statusStr = command.replace("mark-", "").replace("-", "_").toUpperCase();
+                TaskStatus status = TaskStatus.valueOf(statusStr);
+
+                taskService.updateStatus(status, args[1]);
                 break;
             default:
                 System.out.println("Unknown command: " + command);
